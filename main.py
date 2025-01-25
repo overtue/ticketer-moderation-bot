@@ -245,7 +245,7 @@ async def on_ready():
     embed = Embed(title="Make a ticket here!", color=discord.colour.Color.blue())
     
     ticket_dashboard = bot.get_channel(TICKET_DASHBOARD_CHANNEL)
-    
+    await ticket_dashboard.purge(limit=None)
     await ticket_dashboard.send(embed=embed, view=create_ticket_button())
 
 # ---Automod Functions---
