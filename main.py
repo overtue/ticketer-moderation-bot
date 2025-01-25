@@ -493,6 +493,22 @@ async def rule_remove(interaction: discord.Interaction, word: Optional[str], cha
     save_rules(data)
     await interaction.response.send_message("Changes saved successfully!", ephemeral=True)
 
+@rule_add.error
+async def rule_error(interaction: discord.Interaction, error):
+    await interaction.response.send_message(embed=Embed(title=
+        "Apparently, you don't have permission to add any rules :(",
+        colour=discord.Color.red()
+        ),
+        ephemeral=True)
+    
+@rule_remove.error 
+async def rule_error(interaction: discord.Interaction, error):
+    await interaction.response.send_message(embed=Embed(title=
+        "Apparently, you don't have permission to remove any rules :(",
+        colour=discord.Color.red()
+        ),
+        ephemeral=True)
+
 
 @bot.tree.command(name="strike", description="Strike a user")
 @app_commands.describe(member="The member to strike", reason="The reason for the strike")
@@ -675,6 +691,53 @@ async def role_error(interaction: discord.Interaction, error):
         colour=discord.Color.red()
         ),
         ephemeral=True)
+
+@bot.tree.command(name="lock_channel", description="Locks the channel where the command is run")
+@app_commands.check(is_mod)
+async def lock_channel(interaction: discord.Interaction, reason: Optional[str]):
+    """Locks the channel where the command is run"""
+    channel = interaction.channel
+    overwrites = channel.overwrites_for(interaction.guild.default_role)
+    overwrites.send_messages = False
+    overwrites.add_reactions = False
+    await channel.set_permissions(interaction.guild.default_role, overwrite=overwrites)
+    await interaction.channel.send("🔒 Channel has been locked.", ephemeral=True)
+    await interaction.response.send_message(embed=Embed(
+        title=f"🔒 Channel has been locked🔒",
+        color=discord.Color.purple(),
+        description=f"```{reason or 'No Reason Given'}```"
+    ))
+
+
+@lock_channel.error
+async def lock_channel_error(interaction: discord.Interaction, error):
+    await interaction.response.send_message(embed=Embed(
+        title="You don't have permission to lock this channel.",
+        color=discord.Color.red()
+    ), ephemeral=True)
+
+@bot.tree.command(name="unlock_channel", description="Unlocks the channel where the command is run")
+@app_commands.check(is_mod)
+async def unlock_channel(interaction: discord.Interaction, reason: Optional[str]):
+    """Unlocks the channel where the command is run"""
+    channel = interaction.channel
+    overwrites = channel.overwrites_for(interaction.guild.default_role)
+    overwrites.send_messages = None
+    overwrites.add_reactions = None
+    await channel.set_permissions(interaction.guild.default_role, overwrite=overwrites)
+    await interaction.channel.send("🔓 Channel has been unlocked.", ephemeral=True)
+    await interaction.response.send_message(embed=Embed(
+        title=f"🔓 Channel has been unlocked🔓",
+        color=discord.Color.purple(),
+        description=f"```{reason or 'No Reason Given'}```"
+    ))
+
+@unlock_channel.error   
+async def unlock_channel_error(interaction: discord.Interaction, error):
+    await interaction.response.send_message(embed=Embed(
+        title="You don't have permission to unlock this channel.",
+        color=discord.Color.red()
+    ), ephemeral=True)
 
 @bot.tree.command()
 @app_commands.describe(member='The member you want to create a modlog for', action_taken='The action taken', rule_violation='The rule violated', reason='The reason for the action', notes='Any additional notes')
