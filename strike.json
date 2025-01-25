@@ -1,0 +1,77 @@
+{
+    "users": [
+        {
+            "name": "overtue.",
+            "user_id": 1130883869625815232,
+            "warnings": [
+                {
+                    "message": "Automod Violation - e",
+                    "time": 1737702361
+                },
+                {
+                    "message": "Automod Violation - n",
+                    "time": 1737702366
+                },
+                {
+                    "message": "Automod Violation - shit",
+                    "time": 1737703043
+                },
+                {
+                    "message": "Automod Violation - fuck",
+                    "time": 1737703046
+                },
+                {
+                    "message": "Automod Violation - shit",
+                    "time": 1737703393
+                },
+                {
+                    "message": "Automod Violation - shit",
+                    "time": 1737703486
+                },
+                {
+                    "message": "Automod Violation - None",
+                    "time": 1737703491
+                },
+                {
+                    "message": "Automod Violation - None",
+                    "time": 1737703497
+                },
+                {
+                    "message": "Automod Violation - None",
+                    "time": 1737703516
+                },
+                {
+                    "message": "Automod Violation - None",
+                    "time": 1737703528
+                },
+                {
+                    "message": "Automod Violation - shit",
+                    "time": 1737703635
+                },
+                {
+                    "message": "Automod Violation - queer",
+                    "time": 1737801314
+                },
+                {
+                    "message": "Automod Violation - queer",
+                    "time": 1737801911
+                },
+                {
+                    "message": "Automod Violation - queer",
+                    "time": 1737801916
+                },
+                {
+                    "message": "Automod Violation - queer",
+                    "time": 1737803576
+                }
+            ]
+        },
+        {
+            "name": "cosmicedge1",
+            "user_id": 1217356327936987166,
+            "warnings": [
+                {}
+            ]
+        }
+    ]
+}
