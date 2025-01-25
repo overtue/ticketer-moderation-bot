@@ -793,7 +793,7 @@ async def about(interaction: discord.Interaction):
         )
     embed.add_field(name="Author", value="overtue")
     embed.add_field(name="Version", value=ticketer_version)
-    embed.add_field(name="Update Log", value="```Added Automod Functio```")
+    embed.add_field(name="Update Log", value="```Added Automod Function and Channel Locking and Un-Locking```")
     embed.add_field(name="Stars", value=repo.stargazers_count)
     embed.add_field(name="Forks", value=repo.forks_count)  
     embed.add_field(name="Watchers", value=repo.watchers_count)
