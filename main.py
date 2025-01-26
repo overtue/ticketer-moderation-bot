@@ -80,16 +80,22 @@ class ticket_controls(discord.ui.View): # Buttons to A=archive or delete the tic
     async def archive(self, interaction: discord.Interaction, button: discord.ui.Button):
         guild = interaction.guild
         # Check if the user has the required role
-        role = discord.utils.get(interaction.guild.roles, name='"mods"')
+        role = discord.utils.get(interaction.guild.roles, name='all mods')
         if role not in interaction.user.roles:
             await interaction.response.send_message("❌ You can't archive this ticket.", ephemeral=True)
             return
         else:
+    
+            default_role = discord.utils.get(interaction.guild.roles, name='👥Members👥')
             category = discord.utils.get(guild.categories, name="archive")
             overwrites = self.channel.overwrites_for(role)
+            default_overwrites = self.channel.overwrites_for(default_role)
             overwrites.read_messages = True  # Allow the role to read messages
             overwrites.send_messages = False  # Deny the role to send messages
             overwrites.manage_messages = False  # Deny the role to manage messages
+            default_overwrites.view_channel = False
+            await self.channel.set_permissions(interaction.user, overwrite=None)
+            await self.channel.set_permissions(interaction.guild.default_role, read_messages=False)
             await self.channel.set_permissions(role, overwrite=overwrites)
             await self.channel.edit(category=category)
             await interaction.response.defer()
@@ -97,7 +103,7 @@ class ticket_controls(discord.ui.View): # Buttons to A=archive or delete the tic
     @discord.ui.button(label="Delete", style=discord.ButtonStyle.success, custom_id="delete_ticket")
     async def delete(self, interaction: discord.Interaction, button: discord.ui.Button):
         # Check if the user has the required role
-        role = discord.utils.get(interaction.guild.roles, name='"mods"')
+        role = discord.utils.get(interaction.guild.roles, name='all mods')
         if role not in interaction.user.roles:
             await interaction.response.send_message("❌ You can't delete this ticket.", ephemeral=True)
             return
@@ -118,7 +124,7 @@ class create_ticket_button(discord.ui.View):
     async def create_ticket(self, interaction: discord.Interaction, button: discord.ui.Button, ):
         guild = interaction.guild
         category = discord.utils.get(guild.categories, name="tickets")
-        role = discord.utils.get(guild.roles, name='"mods"')
+        role = discord.utils.get(guild.roles, name='all mods')
         CHANNEL_NAME = f"ticket-{random.randint(1,1000)}"
         
         overwrites = {
@@ -132,7 +138,7 @@ class create_ticket_button(discord.ui.View):
         
         embed = Embed(
             title=CHANNEL_NAME,
-            description=f"""Hello {interaction.user.mention}!\n Please wait for mods to assist you. The best thing you could do is describing your issue in this text channel and being patient! Thanyou! \n\n ***This message was sent automatically, please ask the mods if there is anything wrong with this bot or with this dialouge.***""",
+            description=f"""Hello {interaction.user.mention}!\n Please wait for mods to assist you. The best thing you could do is describing your issue in this text channel and being patient! Thankyou! \n\n ***This message was sent automatically, please ask the mods if there is anything wrong with this bot or with this dialouge.***""",
             colour= discord.colour.Color.blue()
             )
         
@@ -559,11 +565,11 @@ async def role_error(interaction: discord.Interaction, error):
         ),
         ephemeral=True)
 
-@bot.tree.command(name="get_strkies", description="Get a member's strike history")
-@app_commands.describe(member="The member you want to get their strike log")
+@bot.tree.command(name="view_strkies", description="View a member's strike history")
+@app_commands.describe(member="The member you want to view their strike log")
 @app_commands.check(is_mod)
-async def get_strikes(interaction: discord.Interaction, member: discord.Member):
-    """Get a member's strike history"""
+async def view_strikes(interaction: discord.Interaction, member: discord.Member):
+    """View a member's strike history"""
     async def get_page(page: int):
         data = load_strikes()
 
@@ -590,7 +596,7 @@ async def get_strikes(interaction: discord.Interaction, member: discord.Member):
 
     await Pagination(interaction, get_page).navigate()
 
-@get_strikes.error
+@view_strikes.error
 async def role_error(interaction: discord.Interaction, error):
     await interaction.response.send_message(embed=Embed(title=
         "Apparently, you don't have permission get anyone's strike history:(",
@@ -731,11 +737,7 @@ async def unlock_channel(interaction: discord.Interaction, reason: Optional[str]
     overwrites.add_reactions = None
     await channel.set_permissions(interaction.guild.default_role, overwrite=overwrites)
     await interaction.channel.send("🔓 Channel has been unlocked.", ephemeral=True)
-    await interaction.response.send_message(embed=Embed(
-        title=f"🔓 Channel has been unlocked🔓",
-        color=discord.Color.purple(),
-        description=f"```{reason or 'No Reason Given'}```"
-    ))
+    await channel.purge(limit=1)
 
 @unlock_channel.error   
 async def unlock_channel_error(interaction: discord.Interaction, error):

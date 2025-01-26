@@ -1,5 +1,6 @@
 # token file
 tokens.json
+tokens_test.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
