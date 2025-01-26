@@ -20,6 +20,7 @@ MY_GUILD = discord.Object(id=tokens["ids"]["guild_id"])
 MODERATOR_ROLE_ID = tokens["ids"]["mod_role_id"]
 TICKET_DASHBOARD_CHANNEL = tokens["ids"]["ticket_dashboard_id"]
 AUDIT_LOG_CHANNEL = tokens["ids"]["audit_log_id"]
+OWNER_ROLE_ID = tokens["ids"]["owner_role_id"]
 L = 5
 ticketer_version = tokens["bot"]["bot_version"]
 g = Github(tokens["external_tokens/keys"]["github"])
@@ -44,6 +45,10 @@ def save_rules(data):
     
 def is_mod(interaction: discord.Interaction):
     if interaction.user.get_role(MODERATOR_ROLE_ID) is not None:
+        return True
+
+def is_owner(interaction: discord.Interaction):
+    if interaction.user.get_role(OWNER_ROLE_ID) is not None:
         return True
     
 def generate_unix_time_code():
@@ -242,10 +247,10 @@ async def on_ready():
     print('------')
     bot.add_view(create_ticket_button())
 
-    embed = Embed(title="Make a ticket here!", color=discord.colour.Color.blue())
+    embed = Embed(title="Make a permanent strike aappeal here!", color=discord.colour.Color.blue())
     
     ticket_dashboard = bot.get_channel(TICKET_DASHBOARD_CHANNEL)
-    await ticket_dashboard.purge(limit=None)
+    await ticket_dashboard.purge(limit=None, check=lambda m: m.author == bot.user)
     await ticket_dashboard.send(embed=embed, view=create_ticket_button())
 
 # ---Automod Functions---
@@ -401,9 +406,9 @@ async def on_audit_log_entry_create(entry):
     user_exceptions="If left blank, automod will ignore messages from the users",
     consequences="If left blank, automod will presume the previous consequence. The action to be taken if the rule is violated, Chose from 'strike', 'timeout', 'kick' or 'ban'. These consiquences apply in all the rules."
     )
-@app_commands.check(is_mod)
+@app_commands.check(is_owner)
 async def rule_add(interaction: discord.Interaction, word: Optional[str], channel_exceptions: Optional[discord.TextChannel], role_exceptions: Optional[discord.Role], user_exceptions: Optional[discord.User], consequences: Optional[str]):
-    """Add a rule for Automod"""
+    """Add a rule for Automod. Ownly the owner can add rules"""
     data = load_rules()
 
     if word in data["words"]:
@@ -447,9 +452,9 @@ async def rule_add(interaction: discord.Interaction, word: Optional[str], channe
     role_exceptions="If left blank, automod will not ignore messages from the roles",
     user_exceptions="If left blank, automod will not ignore messages from the users",
     )
-@app_commands.check(is_mod)
+@app_commands.check(is_owner)
 async def rule_remove(interaction: discord.Interaction, word: Optional[str], channel_exceptions: Optional[discord.TextChannel], role_exceptions: Optional[discord.Role], user_exceptions: Optional[discord.User]): #, consequences: Optional[str]):
-    """Add a rule for Automod"""
+    """Add a rule for Automod. Only the owner can remove rules"""
     data = load_rules()
 
     # Remove word(s)
