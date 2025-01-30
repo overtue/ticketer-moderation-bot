@@ -13,7 +13,7 @@ from typing import Optional, Callable
 from datetime import timedelta
 import asyncio
 
-with open("./tokens.json", "r") as f:
+with open("tokens_test.json", "r") as f:
     tokens = json.load(f)
 
 MY_GUILD = discord.Object(id=tokens["ids"]["guild_id"])
@@ -380,14 +380,13 @@ async def on_audit_log_entry_create(entry):
         discord.AuditLogAction.ban: ("🔨", "User Banned", discord.Color.red()),
         discord.AuditLogAction.unban: ("⚖️", "User Unbanned", discord.Color.green()),
         discord.AuditLogAction.member_move: ("🎧", "User Moved", discord.Color.blue()),
-        discord.AuditLogAction.member_update: ("⏳", "User Timed Out", discord.Colour.purple()),
     }
 
     if entry.action in actions:
         emoji, title, color = actions[entry.action]
         target = entry.target
         actor = entry.user
-        reason = entry.reason or "No reason provided."
+        reason = entry.reason or "No reason given"
 
         embed = discord.Embed(
             title=f"{emoji} {title}",
